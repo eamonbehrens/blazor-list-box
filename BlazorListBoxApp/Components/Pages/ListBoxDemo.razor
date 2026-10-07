@@ -1,0 +1,86 @@
+@page "/"
+@page "/listbox-demo"
+@using BlazorListBox.Components.DynamicListBox
+@using BlazorListBox.Data
+@using BlazorListBox.Data.Models
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@rendermode InteractiveServer
+
+<PageTitle>Dynamic ListBox Demo</PageTitle>
+
+<h1>Dynamic ListBox Component Demo</h1>
+<p>This demo shows a reusable Blazor ListBox component with database persistence.</p>
+
+<div style="margin: 20px 0;">
+    <div style="margin-bottom: 15px;">
+        <label>Add New Item:</label><br />
+        <input type="text" @bind="newItemText" placeholder="Enter item text..." style="margin-right: 10px;" />
+        <button @onclick="AddNewItem">Add Item</button>
+        <button @onclick="RemoveSelectedItem" disabled="@(string.IsNullOrEmpty(selectedValue))">Remove Selected</button>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+        <strong>Selected Value:</strong> @(selectedValue ?? "None")
+    </div>
+
+    <DynamicListBox @ref="listBox" Width="400px" Height="300px" Items="@items" @bind-SelectedValue="selectedValue" />
+</div>
+
+@code {
+    private DynamicListBox? listBox;
+    private List<ListBoxItemData>? items;
+    private string? selectedValue;
+    private string newItemText = string.Empty;
+    private int nextId = 1000;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var dbItems = await DbContext.ListBoxItems.OrderBy(i => i.DisplayOrder).ToListAsync();
+        items = dbItems.Select(i => new ListBoxItemData
+        {
+            Text = i.Text,
+            Value = i.Id.ToString()
+        }).ToList();
+
+        if (dbItems.Any())
+        {
+            nextId = dbItems.Max(i => i.Id) + 1;
+        }
+    }
+
+    private async Task AddNewItem()
+    {
+        if (string.IsNullOrWhiteSpace(newItemText)) return;
+
+        var newDbItem = new ListBoxItemModel
+        {
+            Text = newItemText,
+            DisplayOrder = nextId
+        };
+
+        DbContext.ListBoxItems.Add(newDbItem);
+        await DbContext.SaveChangesAsync();
+
+        listBox?.AddItem(newItemText, newDbItem.Id.ToString());
+        newItemText = string.Empty;
+        nextId++;
+    }
+
+    private async Task RemoveSelectedItem()
+    {
+        if (string.IsNullOrEmpty(selectedValue) || listBox == null) return;
+
+        if (int.TryParse(selectedValue, out int itemId))
+        {
+            var dbItem = await DbContext.ListBoxItems.FindAsync(itemId);
+            if (dbItem != null)
+            {
+                DbContext.ListBoxItems.Remove(dbItem);
+                await DbContext.SaveChangesAsync();
+            }
+        }
+
+        await listBox.RemoveSelectedItemAsync();
+    }
+}

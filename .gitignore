@@ -1,0 +1,21 @@
+# .NET build output and Visual Studio local files
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local credentials and environment overrides
+.env
+.env.*
+!.env.example
+**/secrets.json
+**/appsettings.Local.json
+*.pfx
+*.p12
+
+# OS files
+.DS_Store
+Thumbs.db

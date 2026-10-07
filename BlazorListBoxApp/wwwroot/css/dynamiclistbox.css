@@ -1,0 +1,9 @@
+.dynamic-listbox { background-color: white; border-radius: 4px; }
+
+.listbox-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s; user-select: none; }
+
+.listbox-item:hover { background-color: #f0f0f0; }
+
+.listbox-item.selected { background-color: #e3f2fd; font-weight: 500; }
+
+.listbox-item-removing { background-color: #2196F3 !important; color: white !important; }

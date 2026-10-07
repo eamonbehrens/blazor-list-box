@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <ResourcePreloader />
+    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["BlazorListBox.styles.css"]" />
+    <link rel='stylesheet' href='css/dynamiclistbox.css' />
+        <!--
+            ImportMap is a Blazor component that manages JavaScript import maps for the application.
+            It allows you to define and update module mappings dynamically, enabling modular and maintainable client-side code.
+        -->
+        <ImportMap />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <!--
+        HeadOutlet is a Blazor component that enables dynamic updates to the <head> section of the HTML document.
+        The @@rendermode="InteractiveServer" attribute specifies that the component should be rendered interactively on the server,
+        allowing for real-time updates to metadata, styles, and scripts as the user navigates the app.
+    -->
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+
+<body>
+    <!--
+        The Router component enables navigation between pages in the Blazor application.
+        - AppAssembly specifies the assembly containing routable components.
+        - <Found> renders the matched route using RouteView and applies the default layout.
+        - <NotFound> displays a fallback message and layout when no route matches.
+    -->
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p>Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+    <ReconnectModal />
+        <!--
+            ReconnectModal is a Blazor component that displays a modal dialog when the connection to the server is lost.
+            It provides users with feedback and options to attempt reconnection, improving the application's resilience and user experience.
+        -->
+        <ReconnectModal />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+</body>
+
+</html>
